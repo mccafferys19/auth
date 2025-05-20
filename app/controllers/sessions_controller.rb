@@ -10,9 +10,12 @@ class SessionsController < ApplicationController
     # 2. if the user exists -> check if they know their password
     if @user !=nil # -- "!=nil" asks if it is not nothing
     # 3. if they know their password -> login is successful
-      if @user["password"] == params["password"]
+      if BCrypt::Password.new(@user["password"]) == params["password"]
+       # add a cookie here -- "cookies" is a built in hash
+        cookies["monster"] = "me like cookies"
+       
         flash["notice"] = "Welcome."
-        redirect_to "/companies" 
+        redirect_to "/companies?logged_in_user_id=#{@user["id"]}" # http is stateless, so we have to define this specific user state
       else
         flash["notice"] = "Nope."
         redirect_to "/login"  
