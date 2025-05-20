@@ -12,8 +12,9 @@ class SessionsController < ApplicationController
     # 3. if they know their password -> login is successful
       if BCrypt::Password.new(@user["password"]) == params["password"]
        # add a cookie here -- "cookies" is a built in hash
-        cookies["monster"] = "me like cookies"
-       
+        # cookies["monster"] = "me like cookies"
+        session["user_id"] = @user["id"] # session --> encrypted (2-way) cookie hash
+
         flash["notice"] = "Welcome."
         redirect_to "/companies?logged_in_user_id=#{@user["id"]}" # http is stateless, so we have to define this specific user state
       else
@@ -29,6 +30,7 @@ class SessionsController < ApplicationController
 
   def destroy
     # logout the user
+    session["user_id"] = nil
     flash["notice"] = "Goodbye."
     redirect_to "/login"
   end
